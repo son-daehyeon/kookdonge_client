@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 
+import { QueryProvider } from '@/lib/query/provider';
+
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -15,7 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }
