@@ -31,17 +31,16 @@ function ProfileSection() {
   if (!profile) return null;
 
   return (
-    <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 px-4 py-8">
+    <div className="px-4 py-8">
       <div className="flex items-center gap-4">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 text-4xl ring-4 ring-white/30">
-          👤
-        </div>
-        <div className="flex-1 text-white">
+        <div className="flex-1 text-zinc-800">
           <h2 className="text-lg font-bold">{profile.email}</h2>
-          <p className="mt-1 text-sm text-white/80">{profile.department}</p>
-          <Chip size="sm" variant="soft" className="mt-2 bg-white/20 text-xs text-white">
-            학번: {profile.studentId}
-          </Chip>
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-zinc-800/80">{profile.department}</p>
+            <Chip size="sm" variant="primary">
+              {profile.studentId}
+            </Chip>
+          </div>
         </div>
       </div>
     </div>
@@ -156,7 +155,7 @@ export default function MyPage() {
       <ProfileSection />
       <WaitingListSection />
       <div className="px-4 pt-4">
-        <Button variant="danger" size="lg" className="w-full" onPress={handleLogout}>
+        <Button size="lg" className="w-full" onPress={handleLogout}>
           로그아웃
         </Button>
       </div>

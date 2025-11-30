@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 import { ResponseDTO } from '@/types/api';
 import { useAuthStore } from '@/features/auth/store';
 
@@ -58,11 +60,12 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     body: shouldWrapBody ? JSON.stringify(wrapRequest(body)) : undefined,
   });
 
-  // TODO: 오류 핸들링
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
+  const json: ResponseDTO<T> = await response.json();
+
+  if (json.status !== 200) {
+    toast.error(json.message || '오류가 발생했습니다');
+    throw new Error(`${json.status}: ${json.message}`);
   }
 
-  const json: ResponseDTO<T> = await response.json();
   return json.data;
 }

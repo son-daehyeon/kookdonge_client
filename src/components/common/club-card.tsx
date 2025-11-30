@@ -25,15 +25,15 @@ const TYPE_LABEL: Record<ClubType, string> = {
 
 const STATUS_CONFIG: Record<RecruitmentStatus, { label: string; className: string }> = {
   RECRUITING: {
-    label: 'OPEN',
+    label: '모집중',
     className: 'bg-lime-400 text-zinc-900 dark:bg-lime-400 dark:text-zinc-900',
   },
   SCHEDULED: {
-    label: 'SOON',
+    label: '모집예정',
     className: 'bg-cyan-400 text-zinc-900 dark:bg-cyan-400 dark:text-zinc-900',
   },
   CLOSED: {
-    label: 'CLOSED',
+    label: '마감',
     className: 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400',
   },
 };
@@ -56,10 +56,10 @@ export function ClubCard({ club, index = 0 }: ClubCardProps) {
       <Link href={`/clubs/${club.id}`} className="block">
         <motion.div
           whileTap={{ scale: 0.98 }}
-          className="card-hover overflow-hidden rounded-2xl border border-zinc-100 bg-[var(--card)] dark:border-zinc-800"
+          className="card-hover flex overflow-hidden rounded-2xl border border-zinc-100 bg-[var(--card)] dark:border-zinc-800"
         >
           {/* Image Section */}
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+          <div className="relative h-28 w-28 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
             {club.logoImage ? (
               <>
                 {!imageLoaded && <div className="skeleton absolute inset-0" />}
@@ -70,42 +70,36 @@ export function ClubCard({ club, index = 0 }: ClubCardProps) {
                   className={`object-cover transition-opacity duration-500 ${
                     imageLoaded ? 'opacity-100' : 'opacity-0'
                   }`}
-                  sizes="(max-width: 768px) 100vw, 400px"
+                  sizes="112px"
                   onLoad={() => setImageLoaded(true)}
                 />
               </>
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-100 to-cyan-100 dark:from-violet-900/30 dark:to-cyan-900/30">
-                <span className="text-4xl opacity-50">🎭</span>
-              </div>
-            )}
-
-            {/* Status Badge */}
-            <div className="absolute top-3 left-3">
-              <span
-                className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider ${status.className}`}
-              >
-                {status.label}
-              </span>
-            </div>
-
-            {/* D-Day Badge */}
-            {club.dday > 0 && club.recruitmentStatus === 'RECRUITING' && (
-              <div className="absolute top-3 right-3">
-                <span className="inline-flex items-center rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-bold text-white">
-                  D-{club.dday}
+                <span className="text-2xl font-bold text-violet-500 dark:text-violet-400">
+                  {club.name.charAt(0)}
                 </span>
               </div>
             )}
           </div>
 
           {/* Content Section */}
-          <div className="p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+          <div className="flex min-w-0 flex-1 flex-col justify-center p-3">
+            <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider ${status.className}`}
+              >
+                {status.label}
+              </span>
+              {club.dday > 0 && club.recruitmentStatus === 'RECRUITING' && (
+                <span className="inline-flex items-center rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                  D-{club.dday}
+                </span>
+              )}
+              <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
                 {TYPE_LABEL[club.type]}
               </span>
-              <span className="rounded-md bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+              <span className="rounded-md bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
                 {CATEGORY_LABEL[club.category]}
               </span>
             </div>
@@ -114,7 +108,7 @@ export function ClubCard({ club, index = 0 }: ClubCardProps) {
               {club.name}
             </h3>
 
-            <p className="line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">
               {club.introduction}
             </p>
           </div>
@@ -127,14 +121,15 @@ export function ClubCard({ club, index = 0 }: ClubCardProps) {
 // Skeleton Component for loading state
 export function ClubCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-zinc-100 bg-[var(--card)] dark:border-zinc-800">
-      <div className="skeleton aspect-[16/9] w-full" />
-      <div className="p-4">
-        <div className="mb-2 flex gap-2">
-          <div className="skeleton h-5 w-12 rounded-md" />
-          <div className="skeleton h-5 w-16 rounded-md" />
+    <div className="flex overflow-hidden rounded-2xl border border-zinc-100 bg-[var(--card)] dark:border-zinc-800">
+      <div className="skeleton h-28 w-28 shrink-0" />
+      <div className="flex flex-1 flex-col justify-center p-3">
+        <div className="mb-1.5 flex gap-1.5">
+          <div className="skeleton h-5 w-12 rounded-full" />
+          <div className="skeleton h-5 w-10 rounded-md" />
+          <div className="skeleton h-5 w-14 rounded-md" />
         </div>
-        <div className="skeleton mb-2 h-5 w-3/4 rounded" />
+        <div className="skeleton mb-1 h-5 w-3/4 rounded" />
         <div className="skeleton h-4 w-full rounded" />
       </div>
     </div>

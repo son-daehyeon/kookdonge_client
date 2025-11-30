@@ -108,13 +108,13 @@ body {
 
 /* Accent Button Styles */
 .btn-accent {
-  background: linear-gradient(135deg, var(--color-accent-violet), var(--color-accent-cyan));
+  background: var(--color-accent-violet);
   color: white;
   font-weight: 600;
 }
 
 .dark .btn-accent {
-  background: linear-gradient(135deg, var(--color-accent-lime), var(--color-accent-cyan));
+  background: var(--color-accent-lime);
   color: #09090b;
 }
 
@@ -224,4 +224,13 @@ body {
 }
 .stagger-children > *:nth-child(8) {
   animation-delay: 0.4s;
+}
+
+/* Select Placeholder Styling */
+.select--value[data-placeholder] {
+  color: #a1a1aa;
+}
+
+.dark .select--value[data-placeholder] {
+  color: #71717a;
 }

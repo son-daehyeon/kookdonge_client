@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Toaster } from 'sonner';
 
 import { QueryProvider } from '@/lib/query/provider';
 import { ThemeProvider } from '@/lib/theme/provider';
@@ -41,6 +42,7 @@ export default function RootLayout({
                   <main className="pb-safe">{children}</main>
                   <BottomNav />
                 </div>
+                <Toaster position="top-center" richColors />
               </AuthProvider>
             </QueryProvider>
           </NuqsAdapter>

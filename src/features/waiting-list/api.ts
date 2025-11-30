@@ -2,7 +2,7 @@ import { ClubInWaitingListDto } from '@/types/api';
 import { apiClient } from '@/lib/api/client';
 
 export const waitingListApi = {
-  getMyWaitingList: () => apiClient<ClubInWaitingListDto[]>('/api/users/me/waiting-list'),
+  getMyWaitingList: () => apiClient<ClubInWaitingListDto[]>('/api/waiting-lists'),
 
   addToWaitingList: (clubId: number) =>
     apiClient<void>(`/api/clubs/${clubId}/waiting-list`, {

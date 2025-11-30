@@ -20,10 +20,15 @@ export const LoginReqSchema = z.object({
 
 export const RegisterUserReqSchema = z.object({
   googleGrantCode: z.string(),
-  department: z.string(),
-  studentId: z.string(),
-  phoneNumber: z.string(),
+  department: z.string().min(2, '학과는 2자 이상 입력해주세요'),
+  studentId: z.string().regex(/^\d{8}$/, '학번은 8자리 숫자로 입력해주세요'),
+  phoneNumber: z
+    .string()
+    .regex(/^01[0-9]-?\d{3,4}-?\d{4}$/, '올바른 전화번호 형식으로 입력해주세요'),
 });
+
+// 회원가입 폼용 (googleGrantCode 제외)
+export const RegisterFormSchema = RegisterUserReqSchema.omit({ googleGrantCode: true });
 
 export const ReissueAccessTokenReqSchema = z.object({
   refreshToken: z.string(),

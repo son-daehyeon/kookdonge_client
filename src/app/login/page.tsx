@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Spinner } from '@heroui/react';
@@ -43,12 +44,9 @@ function LoginContent() {
       login(
         { googleGrantCode: code },
         {
-          onSuccess: () => {
-            router.replace('/');
-          },
-          onError: (err) => {
-            if (err.message.includes('404') || err.message.includes('not found')) {
-              router.replace(`/register?code=${code}`);
+          onSuccess: (data) => {
+            if (data?.accessToken) {
+              router.replace('/');
             }
           },
         }
@@ -83,17 +81,11 @@ function LoginContent() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-sm"
       >
-        {/* Logo Section */}
+        {/* Title Section */}
         <div className="mb-12 text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500 to-cyan-500 shadow-lg shadow-violet-500/30 dark:from-lime-400 dark:to-cyan-400 dark:shadow-lime-400/30"
-          >
-            <span className="text-4xl">🎓</span>
-          </motion.div>
-          <h1 className="gradient-text text-3xl font-black tracking-tight">KookDongE</h1>
+          <h1 className="text-3xl font-black tracking-tight text-violet-500 dark:text-lime-400">
+            KookDongE
+          </h1>
           <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             국민대학교 동아리 정보 플랫폼
           </p>
@@ -106,7 +98,7 @@ function LoginContent() {
             animate={{ opacity: 1, x: 0 }}
             className="mb-6 rounded-2xl bg-rose-500/10 p-4 text-center text-sm text-rose-500"
           >
-            로그인에 실패했습니다. 다시 시도해주세요.
+            등록되지 않은 계정입니다. 회원가입을 먼저 해주세요.
           </motion.div>
         )}
 
@@ -134,10 +126,10 @@ function LoginContent() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          Google로 계속하기
+          Google로 로그인
         </motion.button>
 
-        {/* Info Text */}
+        {/* Register Link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -145,11 +137,13 @@ function LoginContent() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            처음이신가요?{' '}
-            <span className="font-semibold text-violet-500 dark:text-lime-400">Google로 시작</span>
-            하면
-            <br />
-            자동으로 회원가입됩니다
+            아직 계정이 없으신가요?{' '}
+            <Link
+              href="/register"
+              className="font-semibold text-violet-500 hover:underline dark:text-lime-400"
+            >
+              회원가입
+            </Link>
           </p>
         </motion.div>
 
