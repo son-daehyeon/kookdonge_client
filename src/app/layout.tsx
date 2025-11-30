@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 import { QueryProvider } from '@/lib/query/provider';
+import { AuthProvider } from '@/features/auth';
 import { Header } from '@/components/common/header';
 
 import '@/styles/globals.css';
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body className="bg-gray-50">
         <NuqsAdapter>
           <QueryProvider>
-            <div className="mx-auto min-h-dvh max-w-md bg-white">
-              <Header />
-              <main>{children}</main>
-            </div>
+            <AuthProvider>
+              <div className="mx-auto min-h-dvh max-w-md bg-white">
+                <Header />
+                <main>{children}</main>
+              </div>
+            </AuthProvider>
           </QueryProvider>
         </NuqsAdapter>
       </body>

@@ -130,7 +130,7 @@ function WaitingListSection() {
 export default function MyPage() {
   const router = useRouter();
   const accessToken = useAuthStore((state) => state.accessToken);
-  const clearTokens = useAuthStore((state) => state.clearTokens);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
 
   useEffect(() => {
     if (!accessToken) {
@@ -139,7 +139,7 @@ export default function MyPage() {
   }, [accessToken, router]);
 
   const handleLogout = () => {
-    clearTokens();
+    clearAuth();
     router.replace('/');
   };
 
