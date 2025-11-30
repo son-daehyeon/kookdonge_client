@@ -1,4 +1,5 @@
 import { ResponseDTO } from '@/types/api';
+import { useAuthStore } from '@/features/auth/store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.kookdonge.co.kr';
 
@@ -25,8 +26,7 @@ function buildUrl(
 }
 
 function getAuthToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('accessToken');
+  return useAuthStore.getState().accessToken;
 }
 
 function wrapRequest<T>(body: T) {
