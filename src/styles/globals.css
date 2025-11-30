@@ -75,12 +75,10 @@ body {
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
 }
 
 .dark .glass {
   background: var(--glass-bg-dark);
-  border-color: var(--glass-border-dark);
 }
 
 /* Smooth image loading */

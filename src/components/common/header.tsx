@@ -55,7 +55,9 @@ export function Header() {
     <header className="glass sticky top-0 z-40 border-b-0">
       <div className="flex h-14 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-1">
-          <span className="gradient-text text-xl font-black tracking-tight">KookDongE</span>
+          <span className="text-xl font-black tracking-tight text-violet-500 dark:text-lime-400">
+            KookDongE
+          </span>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />

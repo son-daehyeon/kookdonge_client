@@ -12,7 +12,8 @@ export const clubKeys = {
   list: (params: ClubListParams) => [...clubKeys.lists(), params] as const,
   details: () => [...clubKeys.all, 'detail'] as const,
   detail: (id: number) => [...clubKeys.details(), id] as const,
-  ranking: () => [...clubKeys.all, 'ranking'] as const,
+  topWeeklyView: () => [...clubKeys.all, 'top-weekly-view'] as const,
+  topWeeklyLike: () => [...clubKeys.all, 'top-weekly-like'] as const,
 };
 
 export function useClubList(params: ClubListParams) {
@@ -30,10 +31,17 @@ export function useClubDetail(clubId: number) {
   });
 }
 
-export function useClubRanking() {
+export function useTopWeeklyView() {
   return useQuery({
-    queryKey: clubKeys.ranking(),
-    queryFn: clubApi.getClubRanking,
+    queryKey: clubKeys.topWeeklyView(),
+    queryFn: clubApi.getTopWeeklyView,
+  });
+}
+
+export function useTopWeeklyLike() {
+  return useQuery({
+    queryKey: clubKeys.topWeeklyLike(),
+    queryFn: clubApi.getTopWeeklyLike,
   });
 }
 

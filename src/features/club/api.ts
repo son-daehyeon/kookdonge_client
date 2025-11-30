@@ -25,7 +25,9 @@ export const clubApi = {
 
   getClubDetail: (clubId: number) => apiClient<ClubDetailRes>(`/api/clubs/${clubId}`),
 
-  getClubRanking: () => apiClient<ClubRankingRes[]>('/api/clubs/ranking'),
+  getTopWeeklyView: () => apiClient<ClubRankingRes[]>('/api/clubs/top/weekly-view'),
+
+  getTopWeeklyLike: () => apiClient<ClubRankingRes[]>('/api/clubs/top/weekly-like'),
 
   likeClub: (clubId: number) =>
     apiClient<void>(`/api/clubs/${clubId}/like`, {
