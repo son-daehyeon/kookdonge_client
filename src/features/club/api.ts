@@ -4,13 +4,12 @@ import {
   ClubListRes,
   ClubRankingRes,
   PageResponse,
-  ResponseDTO,
 } from '@/types/api';
 import { apiClient } from '@/lib/api/client';
 
 export const clubApi = {
   getClubList: (params: ClubListParams) =>
-    apiClient<ResponseDTO<PageResponse<ClubListRes>>>('/api/clubs', {
+    apiClient<PageResponse<ClubListRes>>('/api/clubs', {
       params: {
         category: params.category,
         type: params.type,
@@ -24,17 +23,17 @@ export const clubApi = {
       },
     }),
 
-  getClubDetail: (clubId: number) => apiClient<ResponseDTO<ClubDetailRes>>(`/api/clubs/${clubId}`),
+  getClubDetail: (clubId: number) => apiClient<ClubDetailRes>(`/api/clubs/${clubId}`),
 
-  getClubRanking: () => apiClient<ResponseDTO<ClubRankingRes[]>>('/api/clubs/ranking'),
+  getClubRanking: () => apiClient<ClubRankingRes[]>('/api/clubs/ranking'),
 
   likeClub: (clubId: number) =>
-    apiClient<ResponseDTO<void>>(`/api/clubs/${clubId}/like`, {
+    apiClient<void>(`/api/clubs/${clubId}/like`, {
       method: 'POST',
     }),
 
   unlikeClub: (clubId: number) =>
-    apiClient<ResponseDTO<void>>(`/api/clubs/${clubId}/like`, {
+    apiClient<void>(`/api/clubs/${clubId}/like`, {
       method: 'DELETE',
     }),
 };

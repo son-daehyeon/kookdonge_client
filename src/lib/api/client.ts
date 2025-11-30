@@ -1,9 +1,11 @@
+import { ResponseDTO } from '@/types/api';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.kookdonge.co.kr';
 
-type RequestOptions = {
+type RequestOptions<TBody = unknown> = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   headers?: Record<string, string>;
-  body?: unknown;
+  body?: TBody;
   params?: Record<string, string | number | boolean | undefined>;
 };
 
@@ -27,9 +29,18 @@ function getAuthToken(): string | null {
   return localStorage.getItem('accessToken');
 }
 
+function wrapRequest<T>(body: T) {
+  return {
+    timestamp: new Date().toISOString(),
+    data: body,
+  };
+}
+
 export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', headers = {}, body, params } = options;
   const token = getAuthToken();
+
+  const shouldWrapBody = body !== undefined && ['POST', 'PUT', 'PATCH'].includes(method);
 
   const response = await fetch(buildUrl(endpoint, params), {
     method,
@@ -38,12 +49,14 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
       ...(token && { Authorization: `Bearer ${token}` }),
       ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: shouldWrapBody ? JSON.stringify(wrapRequest(body)) : undefined,
   });
 
+  // TODO: 오류 핸들링
   if (!response.ok) {
     throw new Error(`API Error: ${response.status}`);
   }
 
-  return response.json();
+  const json: ResponseDTO<T> = await response.json();
+  return json.data;
 }

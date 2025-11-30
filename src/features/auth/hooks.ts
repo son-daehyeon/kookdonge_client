@@ -24,9 +24,9 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginReq) => authApi.login(data),
     onSuccess: (res) => {
-      if (res.data.accessToken) {
-        localStorage.setItem('accessToken', res.data.accessToken);
-        localStorage.setItem('refreshToken', res.data.refreshToken);
+      if (res.accessToken) {
+        localStorage.setItem('accessToken', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
       }
       queryClient.invalidateQueries({ queryKey: authKeys.profile() });
     },
@@ -39,9 +39,9 @@ export function useRegister() {
   return useMutation({
     mutationFn: (data: RegisterUserReq) => authApi.register(data),
     onSuccess: (res) => {
-      if (res.data.accessToken) {
-        localStorage.setItem('accessToken', res.data.accessToken);
-        localStorage.setItem('refreshToken', res.data.refreshToken);
+      if (res.accessToken) {
+        localStorage.setItem('accessToken', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
       }
       queryClient.invalidateQueries({ queryKey: authKeys.profile() });
     },
@@ -52,8 +52,8 @@ export function useReissueToken() {
   return useMutation({
     mutationFn: (data: ReissueAccessTokenReq) => authApi.reissueToken(data),
     onSuccess: (res) => {
-      if (res.data.accessToken) {
-        localStorage.setItem('accessToken', res.data.accessToken);
+      if (res.accessToken) {
+        localStorage.setItem('accessToken', res.accessToken);
       }
     },
   });

@@ -5,30 +5,28 @@ import {
   RegisterUserRes,
   ReissueAccessTokenReq,
   ReissueAccessTokenRes,
-  RequestDTO,
-  ResponseDTO,
   UserProfileRes,
 } from '@/types/api';
 import { apiClient } from '@/lib/api/client';
 
 export const authApi = {
   login: (data: LoginReq) =>
-    apiClient<ResponseDTO<LoginRes>>('/api/auth', {
+    apiClient<LoginRes>('/api/auth', {
       method: 'POST',
       params: { request: JSON.stringify({ data }) },
     }),
 
   register: (data: RegisterUserReq) =>
-    apiClient<ResponseDTO<RegisterUserRes>>('/api/users/me', {
+    apiClient<RegisterUserRes>('/api/users/me', {
       method: 'POST',
-      body: { data } as RequestDTO<RegisterUserReq>,
+      body: data,
     }),
 
   reissueToken: (data: ReissueAccessTokenReq) =>
-    apiClient<ResponseDTO<ReissueAccessTokenRes>>('/api/auth/reissue', {
+    apiClient<ReissueAccessTokenRes>('/api/auth/reissue', {
       method: 'POST',
       params: { request: JSON.stringify({ data }) },
     }),
 
-  getMyProfile: () => apiClient<ResponseDTO<UserProfileRes>>('/api/users/me'),
+  getMyProfile: () => apiClient<UserProfileRes>('/api/users/me'),
 };
