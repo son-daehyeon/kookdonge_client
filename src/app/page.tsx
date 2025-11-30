@@ -1,10 +1,10 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, type Key } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Spinner } from '@heroui/react';
+import { Button, Chip, Input, ListBox, Select, Spinner } from '@heroui/react';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 
 import { ClubCategory, ClubType, RecruitmentStatus } from '@/types/api';
@@ -40,7 +40,7 @@ function RankingSection() {
 
   if (isLoading) {
     return (
-      <section className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-6">
+      <section className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 px-4 py-6">
         <div className="flex justify-center">
           <Spinner color="current" className="text-white" />
         </div>
@@ -51,19 +51,23 @@ function RankingSection() {
   if (!rankings || rankings.length === 0) return null;
 
   const top3 = rankings.slice(0, 3);
+  const medals = ['🥇', '🥈', '🥉'];
 
   return (
-    <section className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-6">
-      <h2 className="mb-4 text-lg font-bold text-white">🔥 이번 주 인기 동아리</h2>
+    <section className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 px-4 py-6">
+      <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-white">
+        <span className="text-xl">🔥</span>
+        이번 주 인기 동아리
+      </h2>
       <div className="flex gap-3">
         {top3.map((club, index) => (
           <Link
             key={club.id}
             href={`/clubs/${club.id}`}
-            className="flex flex-1 flex-col items-center rounded-xl bg-white/10 p-3 backdrop-blur-sm"
+            className="flex flex-1 flex-col items-center rounded-2xl bg-white/15 p-4 backdrop-blur-sm transition-all hover:scale-[1.02] hover:bg-white/25"
           >
-            <span className="mb-2 text-2xl font-bold text-yellow-300">{index + 1}</span>
-            <div className="relative mb-2 h-14 w-14 overflow-hidden rounded-full bg-white/20">
+            <span className="mb-2 text-2xl">{medals[index]}</span>
+            <div className="relative mb-2 h-14 w-14 overflow-hidden rounded-full bg-white/20 ring-2 ring-white/30">
               {club.logoImage ? (
                 <Image
                   src={club.logoImage}
@@ -76,10 +80,12 @@ function RankingSection() {
                 <div className="flex h-full w-full items-center justify-center text-xl">🏠</div>
               )}
             </div>
-            <span className="line-clamp-1 text-center text-xs font-medium text-white">
+            <span className="line-clamp-1 text-center text-xs font-semibold text-white">
               {club.name}
             </span>
-            <span className="mt-1 text-xs text-white/70">+{club.weeklyViewGrowth} 조회</span>
+            <Chip size="sm" variant="soft" className="mt-2 bg-white/20 text-[10px] text-white">
+              +{club.weeklyViewGrowth} 조회
+            </Chip>
           </Link>
         ))}
       </div>
@@ -93,49 +99,99 @@ function ClubFilters() {
   const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''));
   const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''));
 
+  const handleCategoryChange = (value: Key | null) => {
+    setCategory((value as string) || null);
+  };
+
+  const handleTypeChange = (value: Key | null) => {
+    setType((value as string) || null);
+  };
+
+  const handleStatusChange = (value: Key | null) => {
+    setStatus((value as string) || null);
+  };
+
   return (
-    <div className="space-y-3 border-b border-gray-200 px-4 py-3">
-      <input
-        type="text"
-        placeholder="동아리 검색..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value || null)}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-      />
-      <div className="flex gap-2 overflow-x-auto">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value || null)}
-          className="shrink-0 rounded-lg border border-gray-300 px-2 py-1.5 text-xs focus:border-blue-500 focus:outline-none"
+    <div className="space-y-3 border-b border-gray-100 bg-white px-4 py-4">
+      <div className="relative">
+        <Input
+          type="text"
+          placeholder="동아리 검색..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value || null)}
+          className="w-full"
+          aria-label="동아리 검색"
+        />
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        <Select
+          className="min-w-[100px]"
+          placeholder="전체 분야"
+          aria-label="분야 선택"
+          value={category || ''}
+          onChange={handleCategoryChange}
         >
-          {CATEGORY_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value || null)}
-          className="shrink-0 rounded-lg border border-gray-300 px-2 py-1.5 text-xs focus:border-blue-500 focus:outline-none"
+          <Select.Trigger className="text-xs">
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {CATEGORY_OPTIONS.map((opt) => (
+                <ListBox.Item key={opt.value} id={opt.value} textValue={opt.label}>
+                  {opt.label}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
+        </Select>
+
+        <Select
+          className="min-w-[100px]"
+          placeholder="전체 유형"
+          aria-label="유형 선택"
+          value={type || ''}
+          onChange={handleTypeChange}
         >
-          {TYPE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value || null)}
-          className="shrink-0 rounded-lg border border-gray-300 px-2 py-1.5 text-xs focus:border-blue-500 focus:outline-none"
+          <Select.Trigger className="text-xs">
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {TYPE_OPTIONS.map((opt) => (
+                <ListBox.Item key={opt.value} id={opt.value} textValue={opt.label}>
+                  {opt.label}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
+        </Select>
+
+        <Select
+          className="min-w-[100px]"
+          placeholder="전체 상태"
+          aria-label="상태 선택"
+          value={status || ''}
+          onChange={handleStatusChange}
         >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          <Select.Trigger className="text-xs">
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {STATUS_OPTIONS.map((opt) => (
+                <ListBox.Item key={opt.value} id={opt.value} textValue={opt.label}>
+                  {opt.label}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
+        </Select>
       </div>
     </div>
   );
@@ -165,36 +221,47 @@ function ClubListSection() {
   }
 
   if (!data || data.content.length === 0) {
-    return <div className="py-12 text-center text-gray-500">검색 결과가 없습니다.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+        <span className="mb-2 text-4xl">🔍</span>
+        <p>검색 결과가 없습니다.</p>
+      </div>
+    );
   }
 
   return (
     <div className="px-4 py-4">
-      <div className="mb-3 text-sm text-gray-600">총 {data.totalElements}개의 동아리</div>
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-600">
+          총 <span className="text-blue-600">{data.totalElements}</span>개의 동아리
+        </span>
+      </div>
       <div className="space-y-3">
         {data.content.map((club) => (
           <ClubCard key={club.id} club={club} />
         ))}
       </div>
       {data.totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2">
-          <button
-            onClick={() => setPage(Math.max(0, page - 1))}
-            disabled={data.first}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm disabled:opacity-50"
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={() => setPage(Math.max(0, page - 1))}
+            isDisabled={data.first}
           >
             이전
-          </button>
-          <span className="text-sm text-gray-600">
+          </Button>
+          <span className="min-w-[60px] text-center text-sm font-medium text-gray-600">
             {page + 1} / {data.totalPages}
           </span>
-          <button
-            onClick={() => setPage(page + 1)}
-            disabled={data.last}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm disabled:opacity-50"
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={() => setPage(page + 1)}
+            isDisabled={data.last}
           >
             다음
-          </button>
+          </Button>
         </div>
       )}
     </div>

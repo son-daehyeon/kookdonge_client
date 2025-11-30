@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Button, Spinner } from '@heroui/react';
+import { Button, Input, Label, Spinner } from '@heroui/react';
 
 import { useRegister } from '@/features/auth/hooks';
 import { useAuthStore } from '@/features/auth/store';
@@ -59,74 +59,81 @@ function RegisterContent() {
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
+          <div className="mb-3 text-4xl">👋</div>
           <h1 className="text-2xl font-bold text-gray-900">회원가입</h1>
           <p className="mt-2 text-sm text-gray-500">추가 정보를 입력해주세요</p>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+          <div className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-600">
             회원가입에 실패했습니다. 다시 시도해주세요.
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="department" className="mb-1 block text-sm font-medium text-gray-700">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="department" className="text-sm font-medium text-gray-700">
               학과
-            </label>
-            <input
+            </Label>
+            <Input
               id="department"
               name="department"
               type="text"
               value={formData.department}
               onChange={handleChange}
               placeholder="예: 컴퓨터공학부"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full"
               required
             />
           </div>
 
-          <div>
-            <label htmlFor="studentId" className="mb-1 block text-sm font-medium text-gray-700">
+          <div className="space-y-1.5">
+            <Label htmlFor="studentId" className="text-sm font-medium text-gray-700">
               학번
-            </label>
-            <input
+            </Label>
+            <Input
               id="studentId"
               name="studentId"
               type="text"
               value={formData.studentId}
               onChange={handleChange}
               placeholder="예: 20231234"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full"
               required
             />
           </div>
 
-          <div>
-            <label htmlFor="phoneNumber" className="mb-1 block text-sm font-medium text-gray-700">
+          <div className="space-y-1.5">
+            <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
               전화번호
-            </label>
-            <input
+            </Label>
+            <Input
               id="phoneNumber"
               name="phoneNumber"
               type="tel"
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="예: 010-1234-5678"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full"
               required
             />
           </div>
 
           <Button
             type="submit"
-            variant="primary"
             size="lg"
-            className="w-full"
+            className="mt-2 w-full"
             isDisabled={!isValid}
             isPending={isPending}
           >
-            {isPending ? '가입 중...' : '가입하기'}
+            {isPending ? (
+              <>
+                <Spinner size="sm" color="current" />
+                가입 중...
+              </>
+            ) : (
+              '가입하기'
+            )}
           </Button>
         </form>
       </div>

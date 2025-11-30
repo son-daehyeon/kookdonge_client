@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Chip } from '@heroui/react';
+
 import { ClubCategory, ClubListRes, ClubType, RecruitmentStatus } from '@/types/api';
 
 const CATEGORY_LABEL: Record<ClubCategory, string> = {
@@ -18,10 +20,13 @@ const TYPE_LABEL: Record<ClubType, string> = {
   DEPARTMENTAL: '학과동아리',
 };
 
-const STATUS_CONFIG: Record<RecruitmentStatus, { label: string; className: string }> = {
-  RECRUITING: { label: '모집중', className: 'bg-green-100 text-green-700' },
-  SCHEDULED: { label: '모집예정', className: 'bg-blue-100 text-blue-700' },
-  CLOSED: { label: '모집마감', className: 'bg-gray-100 text-gray-500' },
+const STATUS_CONFIG: Record<
+  RecruitmentStatus,
+  { label: string; color: 'success' | 'accent' | 'default' }
+> = {
+  RECRUITING: { label: '모집중', color: 'success' },
+  SCHEDULED: { label: '모집예정', color: 'accent' },
+  CLOSED: { label: '모집마감', color: 'default' },
 };
 
 type ClubCardProps = {
@@ -33,8 +38,8 @@ export function ClubCard({ club }: ClubCardProps) {
 
   return (
     <Link href={`/clubs/${club.id}`} className="block">
-      <div className="flex gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+      <div className="flex gap-3 rounded-xl border border-gray-100 bg-white p-3.5 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-gray-100">
           {club.logoImage ? (
             <Image
               src={club.logoImage}
@@ -44,23 +49,23 @@ export function ClubCard({ club }: ClubCardProps) {
               sizes="64px"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-2xl text-gray-400">
+            <div className="flex h-full w-full items-center justify-center text-2xl text-gray-300">
               🏠
             </div>
           )}
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-2">
-            <span
-              className={`shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${status.className}`}
-            >
+            <Chip size="sm" color={status.color} variant="soft">
               {status.label}
-            </span>
+            </Chip>
             {club.dday > 0 && club.recruitmentStatus === 'RECRUITING' && (
-              <span className="text-xs text-red-500">D-{club.dday}</span>
+              <Chip size="sm" color="danger" variant="soft">
+                D-{club.dday}
+              </Chip>
             )}
           </div>
-          <h3 className="mt-1 truncate font-semibold text-gray-900">{club.name}</h3>
+          <h3 className="mt-1.5 truncate text-[15px] font-semibold text-gray-900">{club.name}</h3>
           <p className="truncate text-xs text-gray-500">
             {TYPE_LABEL[club.type]} · {CATEGORY_LABEL[club.category]}
           </p>
