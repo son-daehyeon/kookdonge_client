@@ -1,12 +1,7 @@
 import { ResponseDTO } from '@/types/api';
 import { useAuthStore } from '@/features/auth/store';
 
-// 클라이언트에서는 Next.js rewrite를 통해 프록시되므로 빈 문자열 사용
-// 서버에서는 직접 API URL 사용
-const API_BASE_URL =
-  typeof window === 'undefined'
-    ? process.env.NEXT_PUBLIC_API_URL || 'https://api.kookdonge.co.kr'
-    : '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 type RequestOptions<TBody = unknown> = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

@@ -4,13 +4,15 @@ import type { Metadata, Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 import { QueryProvider } from '@/lib/query/provider';
+import { ThemeProvider } from '@/lib/theme/provider';
 import { AuthProvider } from '@/features/auth';
+import { BottomNav } from '@/components/common/bottom-nav';
 import { Header } from '@/components/common/header';
 
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
-  title: '국동이',
+  title: 'KookDongE',
   description: '국민대학교 동아리 정보 플랫폼',
 };
 
@@ -19,6 +21,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -27,18 +30,21 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className="bg-gray-50">
-        <NuqsAdapter>
-          <QueryProvider>
-            <AuthProvider>
-              <div className="mx-auto min-h-dvh max-w-md bg-white">
-                <Header />
-                <main>{children}</main>
-              </div>
-            </AuthProvider>
-          </QueryProvider>
-        </NuqsAdapter>
+    <html lang="ko" suppressHydrationWarning>
+      <body className="bg-[var(--background)] text-[var(--foreground)]">
+        <ThemeProvider>
+          <NuqsAdapter>
+            <QueryProvider>
+              <AuthProvider>
+                <div className="relative mx-auto min-h-dvh max-w-md bg-[var(--card)] shadow-xl">
+                  <Header />
+                  <main className="pb-safe">{children}</main>
+                  <BottomNav />
+                </div>
+              </AuthProvider>
+            </QueryProvider>
+          </NuqsAdapter>
+        </ThemeProvider>
       </body>
     </html>
   );

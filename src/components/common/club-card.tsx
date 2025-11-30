@@ -1,7 +1,10 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Chip } from '@heroui/react';
+import { motion } from 'framer-motion';
 
 import { ClubCategory, ClubListRes, ClubType, RecruitmentStatus } from '@/types/api';
 
@@ -16,62 +19,124 @@ const CATEGORY_LABEL: Record<ClubCategory, string> = {
 };
 
 const TYPE_LABEL: Record<ClubType, string> = {
-  CENTRAL: '중앙동아리',
-  DEPARTMENTAL: '학과동아리',
+  CENTRAL: '중앙',
+  DEPARTMENTAL: '학과',
 };
 
-const STATUS_CONFIG: Record<
-  RecruitmentStatus,
-  { label: string; color: 'success' | 'accent' | 'default' }
-> = {
-  RECRUITING: { label: '모집중', color: 'success' },
-  SCHEDULED: { label: '모집예정', color: 'accent' },
-  CLOSED: { label: '모집마감', color: 'default' },
+const STATUS_CONFIG: Record<RecruitmentStatus, { label: string; className: string }> = {
+  RECRUITING: {
+    label: 'OPEN',
+    className: 'bg-lime-400 text-zinc-900 dark:bg-lime-400 dark:text-zinc-900',
+  },
+  SCHEDULED: {
+    label: 'SOON',
+    className: 'bg-cyan-400 text-zinc-900 dark:bg-cyan-400 dark:text-zinc-900',
+  },
+  CLOSED: {
+    label: 'CLOSED',
+    className: 'bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400',
+  },
 };
 
 type ClubCardProps = {
   club: ClubListRes;
+  index?: number;
 };
 
-export function ClubCard({ club }: ClubCardProps) {
+export function ClubCard({ club, index = 0 }: ClubCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const status = STATUS_CONFIG[club.recruitmentStatus];
 
   return (
-    <Link href={`/clubs/${club.id}`} className="block">
-      <div className="flex gap-3 rounded-xl border border-gray-100 bg-white p-3.5 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-gray-100">
-          {club.logoImage ? (
-            <Image
-              src={club.logoImage}
-              alt={club.name}
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-2xl text-gray-300">
-              🏠
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+    >
+      <Link href={`/clubs/${club.id}`} className="block">
+        <motion.div
+          whileTap={{ scale: 0.98 }}
+          className="card-hover overflow-hidden rounded-2xl border border-zinc-100 bg-[var(--card)] dark:border-zinc-800"
+        >
+          {/* Image Section */}
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+            {club.logoImage ? (
+              <>
+                {!imageLoaded && <div className="skeleton absolute inset-0" />}
+                <Image
+                  src={club.logoImage}
+                  alt={club.name}
+                  fill
+                  className={`object-cover transition-opacity duration-500 ${
+                    imageLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  onLoad={() => setImageLoaded(true)}
+                />
+              </>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-100 to-cyan-100 dark:from-violet-900/30 dark:to-cyan-900/30">
+                <span className="text-4xl opacity-50">🎭</span>
+              </div>
+            )}
+
+            {/* Status Badge */}
+            <div className="absolute top-3 left-3">
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider ${status.className}`}
+              >
+                {status.label}
+              </span>
             </div>
-          )}
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center gap-2">
-            <Chip size="sm" color={status.color} variant="soft">
-              {status.label}
-            </Chip>
+
+            {/* D-Day Badge */}
             {club.dday > 0 && club.recruitmentStatus === 'RECRUITING' && (
-              <Chip size="sm" color="danger" variant="soft">
-                D-{club.dday}
-              </Chip>
+              <div className="absolute top-3 right-3">
+                <span className="inline-flex items-center rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-bold text-white">
+                  D-{club.dday}
+                </span>
+              </div>
             )}
           </div>
-          <h3 className="mt-1.5 truncate text-[15px] font-semibold text-gray-900">{club.name}</h3>
-          <p className="truncate text-xs text-gray-500">
-            {TYPE_LABEL[club.type]} · {CATEGORY_LABEL[club.category]}
-          </p>
-          <p className="mt-1 line-clamp-1 text-xs text-gray-600">{club.introduction}</p>
+
+          {/* Content Section */}
+          <div className="p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                {TYPE_LABEL[club.type]}
+              </span>
+              <span className="rounded-md bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+                {CATEGORY_LABEL[club.category]}
+              </span>
+            </div>
+
+            <h3 className="mb-1 truncate text-base font-bold text-zinc-900 dark:text-zinc-100">
+              {club.name}
+            </h3>
+
+            <p className="line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
+              {club.introduction}
+            </p>
+          </div>
+        </motion.div>
+      </Link>
+    </motion.div>
+  );
+}
+
+// Skeleton Component for loading state
+export function ClubCardSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-zinc-100 bg-[var(--card)] dark:border-zinc-800">
+      <div className="skeleton aspect-[16/9] w-full" />
+      <div className="p-4">
+        <div className="mb-2 flex gap-2">
+          <div className="skeleton h-5 w-12 rounded-md" />
+          <div className="skeleton h-5 w-16 rounded-md" />
         </div>
+        <div className="skeleton mb-2 h-5 w-3/4 rounded" />
+        <div className="skeleton h-4 w-full rounded" />
       </div>
-    </Link>
+    </div>
   );
 }

@@ -3,7 +3,8 @@
 import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Button, Spinner } from '@heroui/react';
+import { Spinner } from '@heroui/react';
+import { motion } from 'framer-motion';
 
 import { useLogin } from '@/features/auth/hooks';
 import { useAuthStore } from '@/features/auth/store';
@@ -61,33 +62,59 @@ function LoginContent() {
 
   if (isPending || code) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <Spinner size="lg" />
-        <p className="mt-4 text-sm text-gray-500">로그인 중...</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--background)]">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="flex flex-col items-center"
+        >
+          <Spinner size="lg" />
+          <p className="mt-4 text-sm text-zinc-500">로그인 중...</p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-10 text-center">
-          <div className="mb-4 text-5xl">🎓</div>
-          <h1 className="text-2xl font-bold text-gray-900">국동이</h1>
-          <p className="mt-2 text-sm text-gray-500">국민대학교 동아리 정보 플랫폼</p>
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--background)] px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-sm"
+      >
+        {/* Logo Section */}
+        <div className="mb-12 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500 to-cyan-500 shadow-lg shadow-violet-500/30 dark:from-lime-400 dark:to-cyan-400 dark:shadow-lime-400/30"
+          >
+            <span className="text-4xl">🎓</span>
+          </motion.div>
+          <h1 className="gradient-text text-3xl font-black tracking-tight">KookDongE</h1>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            국민대학교 동아리 정보 플랫폼
+          </p>
         </div>
 
+        {/* Error Message */}
         {error && !code && (
-          <div className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-600">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="mb-6 rounded-2xl bg-rose-500/10 p-4 text-center text-sm text-rose-500"
+          >
             로그인에 실패했습니다. 다시 시도해주세요.
-          </div>
+          </motion.div>
         )}
 
-        <Button
-          variant="secondary"
-          size="lg"
-          onPress={handleGoogleLogin}
-          className="flex w-full items-center justify-center gap-3"
+        {/* Google Login Button */}
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={handleGoogleLogin}
+          className="touch-btn flex w-full items-center justify-center gap-3 rounded-2xl border border-zinc-200 bg-white px-6 py-4 font-semibold text-zinc-700 shadow-sm transition-all hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path
@@ -108,19 +135,31 @@ function LoginContent() {
             />
           </svg>
           Google로 계속하기
-        </Button>
+        </motion.button>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          아직 회원이 아니신가요? <span className="font-medium text-blue-600">Google로 시작</span>
-          하면
+        {/* Info Text */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8 text-center"
+        >
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            처음이신가요?{' '}
+            <span className="font-semibold text-violet-500 dark:text-lime-400">Google로 시작</span>
+            하면
+            <br />
+            자동으로 회원가입됩니다
+          </p>
+        </motion.div>
+
+        {/* Terms */}
+        <p className="mt-8 text-center text-[11px] text-zinc-400 dark:text-zinc-500">
+          로그인 시 서비스 이용약관과
           <br />
-          자동으로 회원가입 페이지로 이동합니다.
+          개인정보 처리방침에 동의하게 됩니다
         </p>
-
-        <p className="mt-6 text-center text-xs text-gray-400">
-          로그인 시 서비스 이용약관과 개인정보 처리방침에 동의하게 됩니다.
-        </p>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -129,8 +168,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <Spinner />
+        <div className="flex min-h-dvh items-center justify-center bg-[var(--background)]">
+          <Spinner size="lg" />
         </div>
       }
     >
