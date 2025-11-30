@@ -13,7 +13,7 @@ export const authApi = {
   login: (data: LoginReq) =>
     apiClient<LoginRes>('/api/auth', {
       method: 'POST',
-      params: { request: JSON.stringify({ data }) },
+      body: data,
     }),
 
   register: (data: RegisterUserReq) =>
@@ -25,7 +25,7 @@ export const authApi = {
   reissueToken: (data: ReissueAccessTokenReq) =>
     apiClient<ReissueAccessTokenRes>('/api/auth/reissue', {
       method: 'POST',
-      params: { request: JSON.stringify({ data }) },
+      body: data,
     }),
 
   getMyProfile: () => apiClient<UserProfileRes>('/api/users/me'),
