@@ -110,7 +110,14 @@ function LoginContent() {
           Google로 계속하기
         </Button>
 
-        <p className="mt-8 text-center text-xs text-gray-400">
+        <p className="mt-6 text-center text-sm text-gray-500">
+          아직 회원이 아니신가요? <span className="font-medium text-blue-600">Google로 시작</span>
+          하면
+          <br />
+          자동으로 회원가입 페이지로 이동합니다.
+        </p>
+
+        <p className="mt-6 text-center text-xs text-gray-400">
           로그인 시 서비스 이용약관과 개인정보 처리방침에 동의하게 됩니다.
         </p>
       </div>

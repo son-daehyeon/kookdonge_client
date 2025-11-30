@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button, Input, Label, Spinner } from '@heroui/react';
@@ -136,6 +137,13 @@ function RegisterContent() {
             )}
           </Button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          이미 계정이 있으신가요?{' '}
+          <Link href="/login" className="font-medium text-blue-600 hover:underline">
+            로그인
+          </Link>
+        </p>
       </div>
     </div>
   );
