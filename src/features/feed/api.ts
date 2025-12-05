@@ -7,22 +7,22 @@ import {
 import { apiClient } from '@/lib/api/client';
 
 export const feedApi = {
-  getClubFeeds: (clubId: number) => apiClient<ClubFeedListRes>(`/api/clubs/${clubId}/feeds`),
+  getClubFeeds: (clubId: number) =>
+    apiClient<ClubFeedListRes>('/api/feeds', {
+      params: { club: clubId },
+    }),
 
   createFeed: (clubId: number, data: FeedCreatedReq) =>
-    apiClient<void>(`/api/clubs/${clubId}/feeds`, {
+    apiClient<void>('/api/feeds', {
       method: 'POST',
+      params: { club: clubId },
       body: data,
     }),
 
-  deleteFeed: (clubId: number, feedId: number) =>
-    apiClient<void>(`/api/clubs/${clubId}/feeds/${feedId}`, {
-      method: 'DELETE',
-    }),
-
-  getPresignedUrls: (data: PresignedUrlListReq) =>
+  getPresignedUrls: (clubId: number, data: PresignedUrlListReq) =>
     apiClient<PresignedUrlListRes>('/api/presigned-urls', {
       method: 'POST',
+      params: { club: clubId },
       body: data,
     }),
 };

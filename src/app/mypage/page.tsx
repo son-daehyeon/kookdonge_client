@@ -33,10 +33,10 @@ function ProfileSection() {
   return (
     <div className="px-4 py-8">
       <div className="flex items-center gap-4">
-        <div className="flex-1 text-zinc-800">
-          <h2 className="text-lg font-bold">{profile.email}</h2>
+        <div className="flex-1">
+          <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-100">{profile.email}</h2>
           <div className="flex items-center gap-4">
-            <p className="text-sm text-zinc-800/80">{profile.department}</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">{profile.department}</p>
             <Chip size="sm" variant="primary">
               {profile.studentId}
             </Chip>
@@ -62,13 +62,11 @@ function WaitingListSection() {
 
   return (
     <div className="px-4 py-5">
-      <h3 className="mb-4 flex items-center gap-2 font-semibold text-gray-900">
-        <span className="text-lg">⏳</span>
+      <h3 className="mb-4 flex items-center gap-2 font-semibold text-zinc-800 dark:text-zinc-100">
         대기 중인 동아리
       </h3>
       {clubs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50 py-12 text-gray-400">
-          <span className="mb-2 text-4xl">📭</span>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 py-12 text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
           <p>대기 중인 동아리가 없습니다.</p>
         </div>
       ) : (
@@ -77,9 +75,9 @@ function WaitingListSection() {
             <Link
               key={club.clubId}
               href={`/clubs/${club.clubId}`}
-              className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-gray-200 hover:shadow-md"
+              className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-zinc-600"
             >
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-gray-100">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-700">
                 {club.clubProfileImageUrl ? (
                   <Image
                     src={club.clubProfileImageUrl}
@@ -89,13 +87,15 @@ function WaitingListSection() {
                     sizes="56px"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-2xl text-gray-300">
+                  <div className="flex h-full w-full items-center justify-center text-2xl text-zinc-400 dark:text-zinc-500">
                     🏠
                   </div>
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="truncate font-semibold text-gray-900">{club.clubName}</h4>
+                <h4 className="truncate font-semibold text-zinc-800 dark:text-zinc-100">
+                  {club.clubName}
+                </h4>
                 <div className="mt-1 flex items-center gap-2">
                   <Chip size="sm" color="accent" variant="soft">
                     {TYPE_LABEL[club.clubType]}
@@ -106,7 +106,7 @@ function WaitingListSection() {
                 </div>
               </div>
               <svg
-                className="h-5 w-5 text-gray-400"
+                className="h-5 w-5 text-zinc-400 dark:text-zinc-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

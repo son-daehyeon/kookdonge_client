@@ -31,19 +31,8 @@ export function useCreateFeed(clubId: number) {
   });
 }
 
-export function useDeleteFeed(clubId: number) {
-  const queryClient = useQueryClient();
-
+export function useGetPresignedUrls(clubId: number) {
   return useMutation({
-    mutationFn: (feedId: number) => feedApi.deleteFeed(clubId, feedId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: feedKeys.list(clubId) });
-    },
-  });
-}
-
-export function useGetPresignedUrls() {
-  return useMutation({
-    mutationFn: (data: PresignedUrlListReq) => feedApi.getPresignedUrls(data),
+    mutationFn: (data: PresignedUrlListReq) => feedApi.getPresignedUrls(clubId, data),
   });
 }

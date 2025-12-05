@@ -9,28 +9,23 @@ import { apiClient } from '@/lib/api/client';
 
 export const questionApi = {
   getQuestions: (clubId: number, pageable: Pageable) =>
-    apiClient<PageResponse<QuestionAnswerRes>>(`/api/clubs/${clubId}/questions`, {
+    apiClient<PageResponse<QuestionAnswerRes>>('/api/clubs/questions', {
       params: {
+        club: clubId,
         page: pageable.page,
         size: pageable.size,
-        sort: pageable.sort?.join(','),
       },
     }),
 
   createQuestion: (clubId: number, data: QuestionCreateReq) =>
-    apiClient<void>(`/api/clubs/${clubId}/questions`, {
+    apiClient<QuestionAnswerRes>(`/api/clubs/${clubId}/questions`, {
       method: 'POST',
       body: data,
     }),
 
-  createAnswer: (clubId: number, questionId: number, data: AnswerCreateReq) =>
-    apiClient<void>(`/api/clubs/${clubId}/questions/${questionId}/answer`, {
-      method: 'POST',
+  createAnswer: (questionId: number, data: AnswerCreateReq) =>
+    apiClient<QuestionAnswerRes>(`/api/clubs/questions/${questionId}/answer`, {
+      method: 'PUT',
       body: data,
-    }),
-
-  deleteQuestion: (clubId: number, questionId: number) =>
-    apiClient<void>(`/api/clubs/${clubId}/questions/${questionId}`, {
-      method: 'DELETE',
     }),
 };

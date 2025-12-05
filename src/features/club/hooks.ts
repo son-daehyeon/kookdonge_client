@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { ClubListParams } from '@/types/api';
+import { ClubListParams, Pageable } from '@/types/api';
 
 import { clubApi } from './api';
 
@@ -31,17 +31,17 @@ export function useClubDetail(clubId: number) {
   });
 }
 
-export function useTopWeeklyView() {
+export function useTopWeeklyView(pageable?: Pageable) {
   return useQuery({
     queryKey: clubKeys.topWeeklyView(),
-    queryFn: clubApi.getTopWeeklyView,
+    queryFn: () => clubApi.getTopWeeklyView(pageable),
   });
 }
 
-export function useTopWeeklyLike() {
+export function useTopWeeklyLike(pageable?: Pageable) {
   return useQuery({
     queryKey: clubKeys.topWeeklyLike(),
-    queryFn: clubApi.getTopWeeklyLike,
+    queryFn: () => clubApi.getTopWeeklyLike(pageable),
   });
 }
 

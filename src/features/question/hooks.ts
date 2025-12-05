@@ -32,23 +32,12 @@ export function useCreateQuestion(clubId: number) {
   });
 }
 
-export function useCreateAnswer(clubId: number) {
+export function useCreateAnswer() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ questionId, data }: { questionId: number; data: AnswerCreateReq }) =>
-      questionApi.createAnswer(clubId, questionId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
-    },
-  });
-}
-
-export function useDeleteQuestion(clubId: number) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (questionId: number) => questionApi.deleteQuestion(clubId, questionId),
+      questionApi.createAnswer(questionId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
     },

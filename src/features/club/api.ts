@@ -3,6 +3,7 @@ import {
   ClubListParams,
   ClubListRes,
   ClubRankingRes,
+  Pageable,
   PageResponse,
 } from '@/types/api';
 import { apiClient } from '@/lib/api/client';
@@ -25,9 +26,21 @@ export const clubApi = {
 
   getClubDetail: (clubId: number) => apiClient<ClubDetailRes>(`/api/clubs/${clubId}`),
 
-  getTopWeeklyView: () => apiClient<ClubRankingRes[]>('/api/clubs/top/weekly-view'),
+  getTopWeeklyView: (pageable?: Pageable) =>
+    apiClient<PageResponse<ClubRankingRes>>('/api/clubs/top/weekly-view', {
+      params: {
+        page: pageable?.page ?? 0,
+        size: pageable?.size ?? 5,
+      },
+    }),
 
-  getTopWeeklyLike: () => apiClient<ClubRankingRes[]>('/api/clubs/top/weekly-like'),
+  getTopWeeklyLike: (pageable?: Pageable) =>
+    apiClient<PageResponse<ClubRankingRes>>('/api/clubs/top/weekly-like', {
+      params: {
+        page: pageable?.page ?? 0,
+        size: pageable?.size ?? 5,
+      },
+    }),
 
   likeClub: (clubId: number) =>
     apiClient<void>(`/api/clubs/${clubId}/like`, {

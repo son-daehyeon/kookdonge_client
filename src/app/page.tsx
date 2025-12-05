@@ -69,15 +69,13 @@ function RankingSection() {
     );
   }
 
-  if (!rankings || rankings.length === 0) return null;
-
-  const top5 = rankings.slice(0, 5);
+  const top5 = rankings?.slice(0, 5) || [];
+  const isEmpty = !rankings || rankings.length === 0;
 
   return (
     <section className="px-4 py-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="inline-block animate-pulse text-xl">🔥</span>
           {/* Tab Buttons */}
           <div className="flex gap-1 rounded-full bg-zinc-100 p-1 dark:bg-zinc-800">
             <button
@@ -105,70 +103,76 @@ function RankingSection() {
         <span className="text-xs text-zinc-400">이번 주 인기</span>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -10 }}
-          transition={{ duration: 0.2 }}
-          className="no-scrollbar flex gap-3 overflow-x-auto pb-2"
-        >
-          {top5.map((club, index) => (
-            <motion.div
-              key={club.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <Link href={`/clubs/${club.id}`}>
-                <motion.div
-                  whileTap={{ scale: 0.95 }}
-                  className="relative flex w-24 shrink-0 flex-col items-center rounded-2xl bg-gradient-to-br from-violet-500/10 to-cyan-500/10 p-3 dark:from-violet-500/20 dark:to-cyan-500/20"
-                >
-                  {/* Rank Badge */}
-                  <div className="absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500 text-xs font-bold text-white dark:bg-lime-400 dark:text-zinc-900">
-                    {index + 1}
-                  </div>
+      {isEmpty ? (
+        <div className="flex h-36 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-sm text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
+          인기 동아리가 없습니다
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.2 }}
+            className="no-scrollbar flex gap-3 overflow-x-auto pt-2 pb-2 pl-2"
+          >
+            {top5.map((club, index) => (
+              <motion.div
+                key={club.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Link href={`/clubs/${club.id}`}>
+                  <motion.div
+                    whileTap={{ scale: 0.95 }}
+                    className="relative flex w-24 shrink-0 flex-col items-center rounded-2xl bg-zinc-100 p-3 dark:bg-zinc-800"
+                  >
+                    {/* Rank Badge */}
+                    <div className="absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500 text-xs font-bold text-white dark:bg-lime-400 dark:text-zinc-900">
+                      {index + 1}
+                    </div>
 
-                  {/* Avatar */}
-                  <div className="relative mb-2 h-14 w-14 overflow-hidden rounded-full bg-zinc-200 ring-2 ring-violet-400/30 dark:bg-zinc-700 dark:ring-lime-400/30">
-                    {!imageLoaded[club.id] && (
-                      <div className="skeleton absolute inset-0 rounded-full" />
-                    )}
-                    {club.logoImage ? (
-                      <Image
-                        src={club.logoImage}
-                        alt={club.name}
-                        fill
-                        className={`object-cover transition-opacity duration-300 ${
-                          imageLoaded[club.id] ? 'opacity-100' : 'opacity-0'
-                        }`}
-                        sizes="56px"
-                        onLoad={() => setImageLoaded((prev) => ({ ...prev, [club.id]: true }))}
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xl">
-                        🎭
-                      </div>
-                    )}
-                  </div>
+                    {/* Avatar */}
+                    <div className="relative mb-2 h-14 w-14 overflow-hidden rounded-full bg-zinc-200 ring-2 ring-violet-400/30 dark:bg-zinc-700 dark:ring-lime-400/30">
+                      {!imageLoaded[club.id] && (
+                        <div className="skeleton absolute inset-0 rounded-full" />
+                      )}
+                      {club.logoImage ? (
+                        <Image
+                          src={club.logoImage}
+                          alt={club.name}
+                          fill
+                          className={`object-cover transition-opacity duration-300 ${
+                            imageLoaded[club.id] ? 'opacity-100' : 'opacity-0'
+                          }`}
+                          sizes="56px"
+                          onLoad={() => setImageLoaded((prev) => ({ ...prev, [club.id]: true }))}
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xl">
+                          🎭
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Name */}
-                  <span className="line-clamp-1 text-center text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
-                    {club.name}
-                  </span>
+                    {/* Name */}
+                    <span className="line-clamp-1 text-center text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
+                      {club.name}
+                    </span>
 
-                  {/* Growth Badge */}
-                  <span className="mt-1 rounded-full bg-lime-400/20 px-2 py-0.5 text-[9px] font-medium text-lime-700 dark:bg-lime-400/30 dark:text-lime-300">
-                    +{activeTab === 'view' ? club.weeklyViewGrowth : club.weeklyLikeGrowth}
-                  </span>
-                </motion.div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
+                    {/* Growth Badge */}
+                    <span className="mt-1 rounded-full bg-lime-400/20 px-2 py-0.5 text-[9px] font-medium text-lime-700 dark:bg-lime-400/30 dark:text-lime-300">
+                      +{activeTab === 'view' ? club.weeklyViewGrowth : club.weeklyLikeGrowth}
+                    </span>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </section>
   );
 }
@@ -219,7 +223,7 @@ function ClubFilters() {
           placeholder="어떤 동아리를 찾으시나요?"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="w-full pl-10"
+          className="w-full border border-zinc-300 bg-zinc-50 pl-10 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
           aria-label="동아리 검색"
         />
       </div>
@@ -233,9 +237,9 @@ function ClubFilters() {
           value={category || undefined}
           onChange={handleCategoryChange}
         >
-          <Select.Trigger className="min-w-[72px] rounded-full border-zinc-200 bg-zinc-50 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-            <Select.Value className="text-zinc-700 dark:text-zinc-200" />
-            <Select.Indicator className="text-zinc-500 dark:text-zinc-400" />
+          <Select.Trigger className="min-w-[72px] rounded-full border border-zinc-300 bg-zinc-50 text-xs !text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:!text-zinc-200">
+            <Select.Value className="!text-zinc-700 dark:!text-zinc-200" />
+            <Select.Indicator className="!text-zinc-500 dark:!text-zinc-400" />
           </Select.Trigger>
           <Select.Popover>
             <ListBox>
@@ -260,9 +264,9 @@ function ClubFilters() {
           value={status || undefined}
           onChange={handleStatusChange}
         >
-          <Select.Trigger className="min-w-[72px] rounded-full border-zinc-200 bg-zinc-50 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-            <Select.Value className="text-zinc-700 dark:text-zinc-200" />
-            <Select.Indicator className="text-zinc-500 dark:text-zinc-400" />
+          <Select.Trigger className="min-w-[72px] rounded-full border border-zinc-300 bg-zinc-50 text-xs !text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:!text-zinc-200">
+            <Select.Value className="!text-zinc-700 dark:!text-zinc-200" />
+            <Select.Indicator className="!text-zinc-500 dark:!text-zinc-400" />
           </Select.Trigger>
           <Select.Popover>
             <ListBox>
