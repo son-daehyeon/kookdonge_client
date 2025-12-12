@@ -1,8 +1,2 @@
 export { questionApi } from './api';
-export {
-  questionKeys,
-  useCreateAnswer,
-  useCreateQuestion,
-  useDeleteQuestion,
-  useQuestions,
-} from './hooks';
+export { questionKeys, useCreateAnswer, useCreateQuestion, useQuestions } from './hooks';

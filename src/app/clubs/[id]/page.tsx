@@ -1,15 +1,21 @@
 'use client';
 
-import { Suspense, use } from 'react';
+import { Suspense, use, useState } from 'react';
 import Image from 'next/image';
 
-import { Chip, Spinner, Tabs } from '@heroui/react';
+import { Button, Chip, Spinner, Tabs, TextArea } from '@heroui/react';
 import { parseAsString, useQueryState } from 'nuqs';
 
 import { ClubCategory, ClubType, RecruitmentStatus } from '@/types/api';
-import { useClubDetail } from '@/features/club/hooks';
+import { useMyProfile } from '@/features/auth/hooks';
+import { useClubDetail, useLikeClub, useUnlikeClub } from '@/features/club/hooks';
 import { useClubFeeds } from '@/features/feed/hooks';
-import { useQuestions } from '@/features/question/hooks';
+import { useCreateQuestion, useQuestions } from '@/features/question/hooks';
+import {
+  useAddToWaitingList,
+  useMyWaitingList,
+  useRemoveFromWaitingList,
+} from '@/features/waiting-list/hooks';
 
 const CATEGORY_LABEL: Record<ClubCategory, string> = {
   PERFORMING_ARTS: '공연예술',
@@ -35,8 +41,18 @@ const STATUS_CONFIG: Record<
   CLOSED: { label: '모집마감', color: 'default' },
 };
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${year}년 ${month}월 ${day}일`;
+}
+
 function ClubHeader({ clubId }: { clubId: number }) {
   const { data: club, isLoading } = useClubDetail(clubId);
+  const likeClub = useLikeClub();
+  const unlikeClub = useUnlikeClub();
 
   if (isLoading || !club) {
     return (
@@ -47,9 +63,19 @@ function ClubHeader({ clubId }: { clubId: number }) {
   }
 
   const status = STATUS_CONFIG[club.recruitmentStatus];
+  const isLiking = likeClub.isPending || unlikeClub.isPending;
+
+  const handleLikeToggle = () => {
+    if (isLiking) return;
+    if (club.isLikedByMe) {
+      unlikeClub.mutate(clubId);
+    } else {
+      likeClub.mutate(clubId);
+    }
+  };
 
   return (
-    <div className="border-b border-zinc-200 bg-white px-4 py-6 dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="bg-white px-4 py-6 dark:bg-zinc-900">
       <div className="flex gap-4">
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-zinc-100 shadow-sm dark:bg-zinc-800">
           {club.image ? (
@@ -73,12 +99,25 @@ function ClubHeader({ clubId }: { clubId: number }) {
         </div>
       </div>
       <div className="mt-5 flex gap-3">
-        <div className="flex-1 rounded-xl bg-red-50 py-3 text-center dark:bg-red-950/30">
-          <div className="text-xl font-bold text-red-500 dark:text-red-400">
+        <button
+          type="button"
+          onClick={handleLikeToggle}
+          disabled={isLiking}
+          className={`flex-1 rounded-xl py-3 text-center transition-colors ${
+            club.isLikedByMe ? 'bg-red-500 dark:bg-red-600' : 'bg-red-50 dark:bg-red-950/30'
+          }`}
+        >
+          <div
+            className={`text-xl font-bold ${club.isLikedByMe ? 'text-white' : 'text-red-500 dark:text-red-400'}`}
+          >
             {club.totalLikeCount}
           </div>
-          <div className="text-xs text-zinc-500 dark:text-zinc-400">좋아요</div>
-        </div>
+          <div
+            className={`text-xs ${club.isLikedByMe ? 'text-red-100' : 'text-zinc-500 dark:text-zinc-400'}`}
+          >
+            좋아요
+          </div>
+        </button>
         <div className="flex-1 rounded-xl bg-blue-50 py-3 text-center dark:bg-blue-950/30">
           <div className="text-xl font-bold text-blue-500 dark:text-blue-400">
             {club.totalViewCount}
@@ -96,7 +135,10 @@ function ClubInfoTab({ clubId }: { clubId: number }) {
   if (!club) return null;
 
   const infoItems = [
-    { label: '모집 기간', value: `${club.recruitmentStartDate} ~ ${club.recruitmentEndDate}` },
+    {
+      label: '모집 기간',
+      value: `${formatDate(club.recruitmentStartDate)} ~ ${formatDate(club.recruitmentEndDate)}`,
+    },
     { label: '대상', value: club.targetGraduate },
     { label: '동아리장', value: club.leaderName },
     { label: '활동 장소', value: club.location },
@@ -129,6 +171,7 @@ function ClubInfoTab({ clubId }: { clubId: number }) {
 
 function ClubFeedTab({ clubId }: { clubId: number }) {
   const { data, isLoading } = useClubFeeds(clubId);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -150,35 +193,71 @@ function ClubFeedTab({ clubId }: { clubId: number }) {
   }
 
   return (
-    <div className="space-y-4 p-4">
-      {feeds.map((feed) => (
+    <>
+      <div className="space-y-4 p-4">
+        {feeds.map((feed) => (
+          <div
+            key={feed.feedId}
+            className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
+          >
+            <p className="text-sm leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
+              {feed.content}
+            </p>
+            {feed.postUrls.length > 0 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                {feed.postUrls.map((url, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setSelectedImage(url)}
+                    className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-700"
+                  >
+                    <Image src={url} alt="" fill className="object-cover" sizes="96px" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {selectedImage && (
         <div
-          key={feed.feedId}
-          className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setSelectedImage(null)}
         >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
-            {feed.content}
-          </p>
-          {feed.postUrls.length > 0 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-              {feed.postUrls.map((url, index) => (
-                <div
-                  key={index}
-                  className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-700"
-                >
-                  <Image src={url} alt="" fill className="object-cover" sizes="96px" />
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-xl sm:max-w-md md:max-w-lg">
+            <Image
+              src={selectedImage}
+              alt=""
+              fill
+              className="object-contain"
+              sizes="(max-width: 640px) 384px, (max-width: 768px) 448px, 512px"
+            />
+          </div>
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }
 
 function ClubQnaTab({ clubId }: { clubId: number }) {
   const { data, isLoading } = useQuestions(clubId, { page: 0, size: 20 });
+  const { data: profile } = useMyProfile();
+  const createQuestion = useCreateQuestion(clubId);
+  const [questionText, setQuestionText] = useState('');
+
+  const handleSubmit = () => {
+    if (!questionText.trim() || !profile) return;
+    const requestData = { question: questionText.trim(), userName: profile.email };
+    console.log('질문 등록 요청:', requestData);
+    console.log('profile:', profile);
+    createQuestion.mutate(requestData, {
+      onSuccess: () => {
+        setQuestionText('');
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -190,45 +269,119 @@ function ClubQnaTab({ clubId }: { clubId: number }) {
 
   const questions = data?.content || [];
 
-  if (questions.length === 0) {
+  return (
+    <div className="space-y-4 p-4">
+      <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <h4 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">질문하기</h4>
+        <div className="flex flex-col gap-3">
+          <TextArea
+            placeholder="궁금한 점을 질문해주세요"
+            value={questionText}
+            onChange={(e) => setQuestionText(e.target.value)}
+            className="w-full resize-none shadow-none placeholder:text-zinc-400 hover:shadow-none dark:placeholder:text-zinc-500"
+          />
+          <Button
+            size="sm"
+            variant="primary"
+            onPress={handleSubmit}
+            isDisabled={!questionText.trim() || !profile || createQuestion.isPending}
+            isPending={createQuestion.isPending}
+            className="self-end"
+          >
+            질문 등록
+          </Button>
+        </div>
+      </div>
+
+      {questions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-zinc-400 dark:text-zinc-500">
+          <p>아직 질문이 없습니다.</p>
+        </div>
+      ) : (
+        questions.map((qna) => (
+          <div
+            key={qna.id}
+            className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
+          >
+            <div className="flex items-start gap-3">
+              <Chip size="sm" color="accent" variant="primary" className="shrink-0">
+                Q
+              </Chip>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  {qna.question}
+                </p>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  {qna.userName} · {new Date(qna.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            {qna.answer && (
+              <div className="mt-3 flex items-start gap-3 border-t border-zinc-200 pt-3 dark:border-zinc-700">
+                <Chip size="sm" color="success" variant="primary" className="shrink-0">
+                  A
+                </Chip>
+                <p className="flex-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                  {qna.answer}
+                </p>
+              </div>
+            )}
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+function ClubCTA({ clubId }: { clubId: number }) {
+  const { data: club } = useClubDetail(clubId);
+  const { data: waitingList } = useMyWaitingList();
+  const addToWaiting = useAddToWaitingList();
+  const removeFromWaiting = useRemoveFromWaitingList();
+
+  if (!club) return null;
+
+  const isInWaitingList = waitingList?.some((item) => item.clubId === clubId) ?? false;
+  const isLoading = addToWaiting.isPending || removeFromWaiting.isPending;
+
+  const handleWaitingToggle = () => {
+    if (isLoading) return;
+    if (isInWaitingList) {
+      removeFromWaiting.mutate(clubId);
+    } else {
+      addToWaiting.mutate(clubId);
+    }
+  };
+
+  // 모집중일 때는 지원하기 버튼
+  if (club.recruitmentStatus === 'RECRUITING') {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-zinc-400 dark:text-zinc-500">
-        <span className="mb-2 text-4xl">💬</span>
-        <p>아직 질문이 없습니다.</p>
+      <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-zinc-200 bg-white/80 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-lg dark:border-zinc-700 dark:bg-zinc-900/80">
+        <Button variant="soft" color="default" className="w-full py-3 text-base font-semibold">
+          지원하기
+        </Button>
       </div>
     );
   }
 
+  // 모집예정/마감일 때는 알림 신청 버튼
   return (
-    <div className="space-y-4 p-4">
-      {questions.map((qna) => (
-        <div
-          key={qna.id}
-          className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
-        >
-          <div className="flex items-start gap-3">
-            <Chip size="sm" color="accent" variant="primary" className="shrink-0">
-              Q
-            </Chip>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{qna.question}</p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {qna.userName} · {new Date(qna.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          {qna.answer && (
-            <div className="mt-3 flex items-start gap-3 border-t border-zinc-200 pt-3 dark:border-zinc-700">
-              <Chip size="sm" color="success" variant="primary" className="shrink-0">
-                A
-              </Chip>
-              <p className="flex-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                {qna.answer}
-              </p>
-            </div>
-          )}
-        </div>
-      ))}
+    <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-zinc-200 bg-white/80 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-lg dark:border-zinc-700 dark:bg-zinc-900/80">
+      <Button
+        variant="soft"
+        color="default"
+        className="w-full py-3 text-base font-semibold"
+        onPress={handleWaitingToggle}
+        isDisabled={isLoading}
+        isPending={isLoading}
+      >
+        {isInWaitingList ? '✓ 알림 신청됨' : '모집 알림 받기'}
+      </Button>
+      {isInWaitingList && (
+        <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+          모집이 시작되면 알림을 받을 수 있어요. 탭하여 취소할 수 있습니다.
+        </p>
+      )}
     </div>
   );
 }
@@ -240,7 +393,7 @@ function ClubDetailContent({ clubId }: { clubId: number }) {
     <>
       <ClubHeader clubId={clubId} />
       <Tabs selectedKey={tab} onSelectionChange={(key) => setTab(key as string)} className="w-full">
-        <Tabs.ListContainer className="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+        <Tabs.ListContainer className="bg-white px-4 dark:bg-zinc-900">
           <Tabs.List aria-label="동아리 정보" className="flex w-full">
             <Tabs.Tab
               id="info"
@@ -275,6 +428,9 @@ function ClubDetailContent({ clubId }: { clubId: number }) {
           <ClubQnaTab clubId={clubId} />
         </Tabs.Panel>
       </Tabs>
+      {/* 하단 CTA 버튼 공간 확보 */}
+      <div className="h-24" />
+      <ClubCTA clubId={clubId} />
     </>
   );
 }

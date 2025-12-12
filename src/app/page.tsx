@@ -238,7 +238,7 @@ function ClubFilters() {
           onChange={handleCategoryChange}
         >
           <Select.Trigger className="min-w-[72px] rounded-full border border-zinc-300 bg-zinc-50 text-xs !text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:!text-zinc-200">
-            <Select.Value className="!text-zinc-700 dark:!text-zinc-200" />
+            <Select.Value className="[color:rgb(82,82,91)] dark:[color:rgb(228,228,231)]" />
             <Select.Indicator className="!text-zinc-500 dark:!text-zinc-400" />
           </Select.Trigger>
           <Select.Popover>
@@ -248,7 +248,7 @@ function ClubFilters() {
                   key={opt.value}
                   id={opt.value}
                   textValue={opt.label}
-                  className="flex items-center justify-center text-center"
+                  className="flex items-center justify-center text-center !text-zinc-600 dark:!text-zinc-200"
                 >
                   {opt.label}
                 </ListBox.Item>
@@ -265,7 +265,7 @@ function ClubFilters() {
           onChange={handleStatusChange}
         >
           <Select.Trigger className="min-w-[72px] rounded-full border border-zinc-300 bg-zinc-50 text-xs !text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:!text-zinc-200">
-            <Select.Value className="!text-zinc-700 dark:!text-zinc-200" />
+            <Select.Value className="[color:rgb(82,82,91)] dark:[color:rgb(228,228,231)]" />
             <Select.Indicator className="!text-zinc-500 dark:!text-zinc-400" />
           </Select.Trigger>
           <Select.Popover>
@@ -275,7 +275,7 @@ function ClubFilters() {
                   key={opt.value}
                   id={opt.value}
                   textValue={opt.label}
-                  className="flex items-center justify-center text-center"
+                  className="flex items-center justify-center text-center !text-zinc-600 dark:!text-zinc-200"
                 >
                   {opt.label}
                 </ListBox.Item>

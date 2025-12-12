@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 import { useAuthStore } from '@/features/auth/store';
 
-const HIDDEN_PATHS = ['/login', '/register'];
+const HIDDEN_PATHS = ['/login', '/register', '/clubs/'];
 
 type NavItem = {
   href: string;
@@ -66,7 +66,7 @@ export function BottomNav() {
   const pathname = usePathname();
   const isLoggedIn = useAuthStore((state) => !!state.accessToken);
 
-  if (HIDDEN_PATHS.includes(pathname)) {
+  if (HIDDEN_PATHS.some((path) => pathname === path || pathname.startsWith(path))) {
     return null;
   }
 
