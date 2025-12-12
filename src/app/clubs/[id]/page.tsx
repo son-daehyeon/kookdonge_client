@@ -354,22 +354,13 @@ function ClubCTA({ clubId }: { clubId: number }) {
   };
 
   // 모집중일 때는 지원하기 버튼
-  if (club.recruitmentStatus === 'RECRUITING') {
-    return (
-      <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-zinc-200 bg-white/80 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-lg dark:border-zinc-700 dark:bg-zinc-900/80">
-        <Button variant="soft" color="default" className="w-full py-3 text-base font-semibold">
-          지원하기
-        </Button>
-      </div>
-    );
-  }
+  if (club.recruitmentStatus === 'RECRUITING') return null;
 
   // 모집예정/마감일 때는 알림 신청 버튼
   return (
     <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-zinc-200 bg-white/80 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-lg dark:border-zinc-700 dark:bg-zinc-900/80">
       <Button
-        variant="soft"
-        color="default"
+        variant="ghost"
         className="w-full py-3 text-base font-semibold"
         onPress={handleWaitingToggle}
         isDisabled={isLoading}
