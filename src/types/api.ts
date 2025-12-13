@@ -117,6 +117,7 @@ export type ClubDetailRes = {
   totalViewCount: number;
   isLikedByMe: boolean;
   description: string;
+  content: string;
   category: ClubCategory;
   allowLeaveOfAbsence: boolean;
 };

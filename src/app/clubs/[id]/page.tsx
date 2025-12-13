@@ -151,7 +151,7 @@ function ClubInfoTab({ clubId }: { clubId: number }) {
       <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
         <h3 className="mb-3 font-semibold text-zinc-900 dark:text-zinc-100">동아리 소개</h3>
         <p className="text-sm leading-relaxed whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
-          {club.description}
+          {club.content}
         </p>
       </div>
       <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
