@@ -201,7 +201,7 @@ function ClubFilters() {
   };
 
   return (
-    <div className="glass sticky top-14 z-30 border-y-0 px-4 py-3">
+    <div className="glass sticky top-20 z-30 border-y-0 px-4 py-3">
       {/* Search Input */}
       <div className="relative mb-3">
         <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
