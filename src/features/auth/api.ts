@@ -17,7 +17,7 @@ export const authApi = {
     }),
 
   register: (data: RegisterUserReq) =>
-    apiClient<RegisterUserRes>('/api/users/me', {
+    apiClient<RegisterUserRes>('/register', {
       method: 'POST',
       body: data,
     }),
